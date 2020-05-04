@@ -27,8 +27,8 @@ public class Ant extends Creature
      */
     public void act()
     {
-        status();
         checkForFood(); 
+        status();
     }
     
     private void checkForFood()
@@ -62,20 +62,16 @@ public class Ant extends Creature
     
     private void status()
     {
-        if(carryingFood)
+       if(carryingFood == true)
         {
-            walkTowardsHome();
-        }
-        else{
-            searchForFood();
-        }
-        
-        if(atHome())
-        {
-            setImage(image1);
-            carryingFood = false;
-            getHomeHill().countFood();
-        }
+           walkTowardsHome();
+            if(atHome())
+           {   
+               setImage(image1);
+               carryingFood = false;
+               getHomeHill().countFood();
+           }
+        } 
         else{
             searchForFood();
         }
