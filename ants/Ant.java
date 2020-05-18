@@ -10,7 +10,7 @@ public class Ant extends Creature
 {
     private boolean carryingFood;
     private int MAX_PH_AVAILABLE = 16;
-    private int TIME_FOLLOWING_TRAIL = 30;
+    private int TIME_FOLLOWING_TRIAL = 30;
     private GreenfootImage image1;
     private GreenfootImage image2;
     private int phAvailable, followTrialTimeRemaining;
@@ -36,6 +36,10 @@ public class Ant extends Creature
     {
         checkForFood(); 
         status();
+        walkTowardsPheromoneCenter();
+        searchForFood();
+        handlePheromoneDrop();
+        smellsPhero```1awsqzE2S``````1`mone();
     }
     
     private void checkForFood()
@@ -63,7 +67,16 @@ public class Ant extends Creature
     
     private void searchForFood()
     {
-        randomWalk();
+        if(followTrialTimeRemaining == 0)
+        {
+            walkTowardsPheromoneCenter();
+            randomWalk();
+        }
+        else
+        {
+            followTrialTimeRemaining--;
+            walkAwayFromHome();
+        }
         checkForFood();
     }
     
@@ -72,12 +85,14 @@ public class Ant extends Creature
        if(carryingFood == true)
         {
            walkTowardsHome();
-            if(atHome())
+           handlePheromoneDrop();
+           
+           if(atHome())
            {   
                setImage(image1);
                carryingFood = false;
                getHomeHill().countFood();
-           }
+               }
         } 
         else{
             searchForFood();
@@ -86,16 +101,41 @@ public class Ant extends Creature
     
     private void handlePheromoneDrop()
     {
-        
+        if (MAX_PH_AVAILABLE == 16)
+        {
+            Pheremone ph = new Pheremone();
+            getWorld().addObject(ph, getX(), getY());
+            phAvailable = 0;
+        }
+        else
+        {
+            phAvailable++;
+        }
+        status();
     }
     
     private boolean smellsPheromone()
     {
-       return false;
+       if(isTouching(Pheremone.class))
+       {
+           return true;
+       }
+       else
+       {
+           return false;
+       }
     }
     
     private void walkTowardsPheromoneCenter()
     {
-        
+        Pheremone pheremone = (Pheremone) getOneIntersectingObject(Pheremone.class);
+        if (pheremone != null)
+        {
+            headTowards(pheremone);
+            if (getX() == pheremone.getX() && getY() == pheremone.getY())
+            {
+                followTrialTimeRemaining = TIME_FOLLOWING_TRIAL;
+            }
+        }
     }
 }
